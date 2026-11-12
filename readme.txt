@@ -14,6 +14,7 @@ python3 -m compileall -q trialvault lab tests
 ## 现有操作示例
 
 python3 -m trialvault demo
+python3 -m trialvault.harvest_demo
 python3 -m trialvault --root vault-data run action.json
 python3 -m unittest discover -s tests -v
 python3 -m compileall -q trialvault
@@ -21,3 +22,5 @@ python3 -m compileall -q trialvault
 ## 本地来源
 
 lab/ 提供独立的合作方协议或合成文档发生器，不连接生产服务。协议、样本含义和操作见 docs/来源协议.md。运行 python3 -m lab.demo 可查看来源行为，python3 -m lab.check 依次执行测试、语法检查、业务演示和来源演示。HTTP 服务默认绑定回环地址，测试使用自动分配端口并在结束时清理。
+
+trialvault/harvest/ 面向 GraphQL 冻结批次接口提供采集入口：外层实验列表与各实验测量列表分别分页，按实验保存内层进度，全部取齐后才经既有 ingestion 形成可发布的数据集版本。动作（harvest_open、harvest_run、harvest_status、harvest_publish、harvest_lineage 等）与行为约定见 docs/来源协议.md，python3 -m trialvault.harvest_demo 给出端到端演示。

@@ -3,6 +3,7 @@ from .contracts.suites import QualitySuites
 from .contracts.migration import SchemaMigration
 from .releases.retention import RetentionReview
 from .catalog.query import CatalogQueries
+from .harvest.manager import HarvestManager
 from pathlib import Path
 from .validation import reject
 from .artifacts.store import ArtifactStore
@@ -32,6 +33,13 @@ class Vault:
         )
         self.releases = ReleasePlanner(self.database, self.registry, self.artifacts)
         self.exporter = Exporter(self.database, self.releases, self.artifacts)
+        self.harvests = HarvestManager(
+            self.database,
+            self.registry,
+            self.ingestion,
+            self.artifacts,
+            root / "harvests",
+        )
         self.patches = VersionPatches(self.database, self.registry, self.ingestion)
         self.quality = QualitySuites(
             self.database, self.registry, self.ingestion, self.checks

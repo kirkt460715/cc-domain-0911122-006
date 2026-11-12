@@ -5,6 +5,7 @@ from pathlib import Path
 from .validation import object_value, parse_json, canonical, reject, VaultError
 from .service import Vault
 from .releases.exporter import verify_directory
+from .harvest.client import GraphQLClient
 
 
 def dispatch(vault, request):
@@ -96,6 +97,37 @@ def dispatch(vault, request):
         return vault.queries.lookup(**options)
     if action == "storage_usage":
         return vault.queries.storage_usage()
+    if action == "harvest_open":
+        return vault.harvests.open(
+            options["harvest"],
+            options["endpoint"],
+            options["batch"],
+            options["dataset"],
+            options.get("schema_version", 1),
+        )
+    if action == "harvest_run":
+        client = GraphQLClient(options["endpoint"])
+        return vault.harvests.run(
+            options["harvest"],
+            client,
+            options.get("max_requests"),
+            options.get("budget_credit", 0),
+            options.get("retry_failed_branches", True),
+        )
+    if action == "harvest_status":
+        return vault.harvests.status(options["harvest"])
+    if action == "harvests":
+        return vault.harvests.list_harvests()
+    if action == "harvest_publish":
+        return vault.harvests.publish(
+            options["harvest"],
+            options["request"],
+            options.get("classification", "internal"),
+            options.get("scopes", ["research"]),
+            options.get("expected_version"),
+        )
+    if action == "harvest_lineage":
+        return vault.harvests.lineage(options["harvest"], options.get("measurement"))
     reject("input", "unknown action", action=action)
 
 
